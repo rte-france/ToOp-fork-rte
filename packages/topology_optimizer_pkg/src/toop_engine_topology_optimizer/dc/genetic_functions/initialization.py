@@ -564,7 +564,7 @@ def algo_setup(
         proportion_crossover=ga_args.proportion_crossover,
         crossover_mutation_ratio=ga_args.crossover_mutation_ratio,
         random_seed=ga_args.random_seed,
-        observed_metrics=ga_args.observed_metrics,
+        observed_metrics=ga_args.observed_metrics, 
         distributed=lf_args.distributed,
         devices=jax.devices() if lf_args.distributed else None,
         me_descriptors=ga_args.me_descriptors,
@@ -607,15 +607,19 @@ def filter_dynamic_information(dynamic_information: DynamicInformation,
     filtered_dynamic_information = DynamicInformation(**dynamic_information.__dict__)
     if sub_stations:
         acs = dynamic_information.action_set
-        substation_correspondence_mask = jnp.isin(acs.substation_correspondence, jnp.array(sub_stations, dtype=int))
+        
+        sub_stations_index = jnp.array(sub_stations, dtype=int)
+        substation_correspondence_mask = jnp.isin(acs.substation_correspondence, sub_stations_index)
+
 
         filtered_branch_actions = acs.branch_actions[substation_correspondence_mask,:]
         filtered_inj_actions = acs.inj_actions[substation_correspondence_mask,:]
-        filtered_na_actions_per_sub = acs.n_actions_per_sub[jnp.array(sub_stations, dtype=int)]
+        filtered_na_actions_per_sub = acs.n_actions_per_sub[sub_stations_index]
         filtered_substation_correspondence = acs.substation_correspondence[substation_correspondence_mask]
         filtered_unsplit_action_mask = acs.unsplit_action_mask[substation_correspondence_mask]
         filtered_reassignment_distance = acs.reassignment_distance[substation_correspondence_mask]
-        filtered_action_start_indices = acs.action_start_indices[jnp.array(sub_stations, dtype=int)]
+        filtered_action_start_indices = acs.action_start_indices[sub_stations_index]
+        filtered_generators_per_sub = dynamic_information.generators_per_sub[sub_stations_index]
 
         filtered_action_set = ActionSet(branch_actions=filtered_branch_actions,
                                 inj_actions=filtered_inj_actions,
@@ -625,7 +629,9 @@ def filter_dynamic_information(dynamic_information: DynamicInformation,
                                 reassignment_distance=filtered_reassignment_distance,
                                 action_start_indices=filtered_action_start_indices,
                                 )
-        filtered_dynamic_information = replace(filtered_dynamic_information, action_set=filtered_action_set)
+        filtered_dynamic_information = replace(filtered_dynamic_information, 
+                                               action_set=filtered_action_set, 
+                                               generators_per_sub=filtered_generators_per_sub)
 
     if disconnections:
         filtered_branches = dynamic_information.disconnectable_branches[jnp.array(disconnections, dtype=int)]
