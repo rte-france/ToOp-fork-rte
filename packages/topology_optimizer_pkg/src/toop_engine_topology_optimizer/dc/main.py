@@ -278,6 +278,7 @@ def main(
     )
 
     logger.info(f"Optimization started: {stats}")
+    logger.info(f"{optimizer_data.algo._number_of_combinations_to_evaluate} topos to evaluate.")
 
     writer = SummaryWriter(f"{args.tensorboard_dir}/{datetime.datetime.now()}")
     writer.add_hparams(args_dict, {})
@@ -303,7 +304,7 @@ def main(
             "epoch": 0,
         },
     ) as pbar:
-        while time.time() - running_means.start_time < args.ga_config.runtime_seconds:
+        while (time.time() - running_means.start_time < args.ga_config.runtime_seconds) or args.type_of_emitter == "BruteForce":
             optimizer_data = run_epoch(optimizer_data)
             if args.type_of_emitter == "BruteForce":
                 if optimizer_data.jax_data.emitter_state.total_inj_combis > optimizer_data.algo._number_of_combinations_to_evaluate:
