@@ -53,7 +53,7 @@ from toop_engine_topology_optimizer.dc.genetic_functions.mutation.mutate import 
 from toop_engine_topology_optimizer.dc.genetic_functions.scoring_functions import (
     scoring_function,
 )
-from toop_engine_topology_optimizer.dc.dc_bruteforce.brute_force import BruteForceAlgo, next_brute_force, next_subsample, number_of_possible_combinations
+from toop_engine_topology_optimizer.dc.dc_bruteforce.brute_force import BruteForceAlgo, next_brute_force, number_of_possible_combinations
 from toop_engine_topology_optimizer.dc.repertoire.discrete_map_elites import DiscreteMapElites
 from toop_engine_topology_optimizer.dc.repertoire.discrete_me_repertoire import (
     DiscreteMapElitesRepertoire,

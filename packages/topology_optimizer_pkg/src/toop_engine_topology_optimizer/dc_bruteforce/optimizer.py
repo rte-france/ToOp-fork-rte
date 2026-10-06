@@ -43,6 +43,7 @@ from toop_engine_topology_optimizer.dc_bruteforce.generator import (
 )
 from toop_engine_topology_optimizer.interfaces.messages.dc_params import DCOptimizerParameters
 from toop_engine_topology_optimizer.interfaces.messages.results import Metrics, Strategy, Topology, TopologyPushResult
+from toop_engine_topology_optimizer.dc.genetic_functions.initialization import JaxOptimizerData
 
 
 @dataclass
@@ -92,7 +93,7 @@ class OptimizerData:
 
     start_time: float
     """Wall-clock timestamp when the bruteforce run started."""
-
+    
     latest_topologies: list[Topology] = field(default_factory=list)
     """Improved topologies produced by the most recent epoch."""
 

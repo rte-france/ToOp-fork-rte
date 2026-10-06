@@ -232,6 +232,7 @@ def run_task_process(cfg: DictConfig, conn: Optional[Connection] = None) -> Opti
         "double_limits": tuple(cfg.double_limits) if cfg.double_limits is not None else None,
         "sub_stations": cfg.sub_stations,
         "disconnections": cfg.disconnections,
+        "type_of_emitter": cfg.type_of_emitter
     }
 
     # Remove None values

@@ -63,7 +63,7 @@ def idle_loop(
     logger.info("Entering idle loop")
     while True:
         message = consumer.poll(timeout=heartbeat_interval_ms / 1000)
-
+        logger.info(message)
         if not message:
             send_heartbeat_fn(IdleHeartbeat())
             continue

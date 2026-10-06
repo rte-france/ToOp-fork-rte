@@ -123,22 +123,22 @@ def optimization_loop(
     """
     logger.info(f"Initializing DC bruteforce optimization {optimization_id}")
 
-    try:
-        send_heartbeat_fn(OptimizationStartedHeartbeat(optimization_id=optimization_id))
-        optimizer_data, stats, initial_strategy = initialize_optimization(
-            params=dc_params,
-            optimization_id=optimization_id,
-            static_information_files=tuple(gf.static_information_file for gf in grid_files),
-            processed_gridfile_fs=processed_gridfile_fs,
-        )
-        send_result_fn(OptimizationStartedResult(initial_topology=initial_strategy, initial_stats=stats))
-        flush_result_fn()
-        logger.info(f"Starting optimization with initial fitness {initial_strategy.timesteps[0].metrics.fitness}")
-    except Exception as exc:
-        send_result_fn(OptimizationStoppedResult(reason="error", message=str(exc)))
-        flush_result_fn()
-        logger.error(f"Error during bruteforce initialization {optimization_id}: {exc}")
-        return
+    #try:
+    #send_heartbeat_fn(OptimizationStartedHeartbeat(optimization_id=optimization_id))
+    optimizer_data, stats, initial_strategy = initialize_optimization(
+        params=dc_params,
+        optimization_id=optimization_id,
+        static_information_files=tuple(gf.static_information_file for gf in grid_files),
+        processed_gridfile_fs=processed_gridfile_fs,
+    )
+    send_result_fn(OptimizationStartedResult(initial_topology=initial_strategy, initial_stats=stats))
+    flush_result_fn()
+    logger.info(f"Starting optimization with initial fitness {initial_strategy.timesteps[0].metrics.fitness}")
+    #except Exception as exc:
+    #    send_result_fn(OptimizationStoppedResult(reason="error", message=str(exc)))
+    #    flush_result_fn()
+    #    logger.error(f"Error during bruteforce initialization {optimization_id}: {exc}")
+    #    return
 
     epoch = 1
     start_time = time.time()
@@ -252,6 +252,7 @@ def main(
             max_command_age_hours=args.max_command_age_hours,
         )
         command_consumer.start_processing()
+        logger.info("on part ou qhuoi ? ")
         optimization_loop(
             dc_params=command.dc_params,
             grid_files=command.grid_files,

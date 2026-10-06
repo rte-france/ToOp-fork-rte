@@ -106,7 +106,7 @@ def next_brute_force(current_genotypes, n_actions, n_disconnections, n_rel_subs,
 
     return Genotype(action_index=next_action_index,
                     disconnections=next_disconnections,
-                    nodal_injections_optimized=None)
+                    nodal_injections_optimized=current_genotypes.nodal_injections_optimized)
 
 
 def number_of_possible_combinations(n, p):

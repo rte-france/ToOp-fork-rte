@@ -57,6 +57,8 @@ from toop_engine_topology_optimizer.dc.repertoire.discrete_me_repertoire import 
 )
 from toop_engine_topology_optimizer.dc.repertoire.plotting import plot_repertoire
 from toop_engine_topology_optimizer.dc.worker.optimizer import OptimizerData, initialize_optimization, run_epoch
+#from toop_engine_topology_optimizer.dc_bruteforce.optimizer import OptimizerData, initialize_optimization, run_epoch
+
 from toop_engine_topology_optimizer.interfaces.messages.dc_params import (
     BatchedMEParameters,
     DCOptimizerParameters,
@@ -279,6 +281,7 @@ def main(
 
     logger.info(f"Optimization started: {stats}")
     logger.info(f"{optimizer_data.algo._number_of_combinations_to_evaluate} topos to evaluate.")
+    logger.info(f"Type of emmiter: {args.type_of_emitter }")
 
     writer = SummaryWriter(f"{args.tensorboard_dir}/{datetime.datetime.now()}")
     writer.add_hparams(args_dict, {})
@@ -290,6 +293,7 @@ def main(
         iteration=0,
         writer=writer,
     )
+    
 
     epoch = 0
     with tqdm(
@@ -307,7 +311,7 @@ def main(
         while (time.time() - running_means.start_time < args.ga_config.runtime_seconds) or args.type_of_emitter == "BruteForce":
             optimizer_data = run_epoch(optimizer_data)
             if args.type_of_emitter == "BruteForce":
-                if optimizer_data.jax_data.emitter_state.total_inj_combis > optimizer_data.algo._number_of_combinations_to_evaluate:
+                if int(optimizer_data.jax_data.emitter_state.total_inj_combis) > optimizer_data.algo._number_of_combinations_to_evaluate:
                     break
             with jax.default_device(jax.devices("cpu")[0]):
                 repertoire = (
