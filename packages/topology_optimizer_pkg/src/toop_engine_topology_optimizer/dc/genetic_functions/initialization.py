@@ -172,6 +172,7 @@ def initialize_genetic_algorithm(
     max_num_splits: int,
     max_num_disconnections: int,
     n_rel_subs: int,
+    n_actions: int,
     n_disconnectable_branches: int,
     static_informations: tuple[StaticInformation, ...],
     target_metrics: tuple[tuple[MetricType, float], ...],
@@ -184,7 +185,7 @@ def initialize_genetic_algorithm(
     me_descriptors: tuple[DescriptorDef, ...],
     distributed: bool,
     devices: Optional[list[jax.Device]] = None,
-    cell_depth: int = 1,
+    cell_depth: int = 5,
     n_worst_contingencies: int = 10,
 ) -> tuple[DiscreteMapElites, JaxOptimizerData]:
     """Initialize the mapelites algorithm.
@@ -276,9 +277,9 @@ def initialize_genetic_algorithm(
 
     crossover_partial = partial(crossover, action_set=action_set, prob_take_a=proportion_crossover)
     next_brute_force_partial = partial(next_brute_force, n_actions=max_num_splits, n_disconnections=max_num_disconnections, 
-                                       n_rel_subs=n_rel_subs, n_disconnectable_branches=n_disconnectable_branches)
+                                       n_rel_subs=n_actions, n_disconnectable_branches=n_disconnectable_branches)
 
-    type_of_algo = "BruteForce" # TODO, propagate param
+    type_of_algo = "BruteForce" #"Mixing or BruteForce" # TODO, propagate param
     emitter = TrackingBruteForceEmmiter(
         batch_size,
         next_brute_force_partial,
@@ -292,7 +293,8 @@ def initialize_genetic_algorithm(
             batch_size
         )
 
-    number_of_combinations = number_of_possible_combinations(n_disconnectable_branches, max_num_disconnections) * number_of_possible_combinations(n_rel_subs, max_num_splits)  
+    number_of_combinations = number_of_possible_combinations(n_disconnectable_branches, max_num_disconnections) * number_of_possible_combinations(n_actions, max_num_splits)  
+    
 
     
     algo = BruteForceAlgo(
@@ -521,6 +523,7 @@ def algo_setup(
             )
         )
     n_rel_subs = static_informations[0].dynamic_information.n_sub_relevant
+    n_actions = static_informations[0].dynamic_information.action_set.branch_actions.shape[0]
     n_disconnectable_branches = len(static_informations[0].dynamic_information.disconnectable_branches)
     mutation_config = MutationConfig(
         mutation_repetition=ga_args.mutation_repetition,
@@ -557,6 +560,7 @@ def algo_setup(
         max_num_splits=lf_args.max_num_splits,
         max_num_disconnections=lf_args.max_num_disconnections,
         n_rel_subs=n_rel_subs,
+        n_actions=n_actions,
         n_disconnectable_branches=n_disconnectable_branches,
         static_informations=static_informations,
         target_metrics=ga_args.target_metrics,

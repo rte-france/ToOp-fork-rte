@@ -704,6 +704,9 @@ def save_orao_summary(
         disconnections=disconnections,
     )
     orao_summary = changing_switches_to_orao_dict(switch_updates)
+    orao_summary["actions"] = actions
+    orao_summary["disconnections"] = disconnections
+
 
     with (output_dir / "orao_summary.json").open("w", encoding="utf-8") as file_handle:
         json.dump(orao_summary, file_handle)
