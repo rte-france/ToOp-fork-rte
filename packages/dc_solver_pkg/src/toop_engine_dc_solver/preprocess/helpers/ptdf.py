@@ -73,11 +73,17 @@ def compute_ptdf(
     )
     ptdf[:, noslack] = spsolve(
         node_node_susceptance[np.ix_(noslack, noref)].T,
-        branch_node_susceptance[:, noref].toarray().T,
+        branch_node_susceptance[:, noref].toarray().T
     ).T
+
+    from scipy import sparse
+
+    #sparse.save_npz("node_node_susceptance.npz", node_node_susceptance[np.ix_(noslack, noref)].T)
+    #np.save("branch_node_susceptance.npy", branch_node_susceptance[:, noref].toarray().T)
     assert np.isnan(ptdf).sum() == 0, (
         "PTDF contains NaNs - this could be because susceptances are NaN, very small or very large"
         + " or the grid is not connected and hence the node-node susceptance matrix is singular."
+        + f""
     )
     return ptdf
 

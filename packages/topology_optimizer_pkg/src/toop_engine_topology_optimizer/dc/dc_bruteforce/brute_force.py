@@ -2,6 +2,7 @@ from beartype.typing import Callable, Tuple
 import jax.lax as lax
 import jax.numpy as jnp
 from jaxtyping import PRNGKeyArray, PyTree
+import jax
 from pydantic import PositiveInt
 from qdax.core.emitters.emitter import Emitter
 from qdax.custom_types import Descriptor, ExtraScores, Fitness, Metrics
@@ -97,9 +98,9 @@ def next_brute_force(current_genotypes, n_actions, n_disconnections, n_rel_subs,
     next_disconnections = transform(current_disconnections)
     next_disconnections = next_subsample(next_disconnections, n_disconnectable_branches + 1, n_disconnections)
     next_disconnections = inverse_transform(next_disconnections)
-
+    
     # If all actions have been tested, take next disconnections
-    incremente = jnp.all(next_action_index == int_max())
+    incremente = jnp.all(next_disconnections == int_max())
 
     next_disconnections = jnp.where(incremente, int_max(), next_disconnections)
     next_action_index = jnp.where(incremente, next_action_index, current_action_index)
